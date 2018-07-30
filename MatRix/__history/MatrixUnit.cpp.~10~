@@ -1,0 +1,89 @@
+//---------------------------------------------------------------------------
+
+#include <vcl.h>
+#pragma hdrstop
+
+#include "MatrixUnit.h"
+//---------------------------------------------------------------------------
+#pragma package(smart_init)
+#pragma resource "*.dfm"
+TForm2 *Form2;
+//---------------------------------------------------------------------------
+__fastcall TForm2::TForm2(TComponent* Owner)
+	: TForm(Owner)
+{
+
+}
+//---------------------------------------------------------------------------
+void __fastcall TForm2::BitBtn1Click(TObject *Sender)
+{
+try{
+n=StrToInt(Edit1->Text);  //Число строк 1й матрицы
+k=StrToInt(Edit2->Text);  //Число столбцов 2й матрицы
+n1=StrToInt(Edit3->Text); //Число строк 2й матрицы
+k1=StrToInt(Edit4->Text); //Число столбцов 2й матрицы
+Current = 0;
+ProgressBar1->Position = Current;
+// Размерность ответа - n * k1
+mas = new int*[n];
+mas2=new int*[n1]; // Создаём в куче массивы с n и n1 строками
+for (int i=0;i<n;i++) mas[i] = new int[k]; // выделение динамич памяти под mas[n][k]
+ for (int i = 0; i <n; i++)   // Инициализация первой матрицы
+   {
+	   for (int j = 0; j < k; j++)
+	   {
+		  mas[i][j] = rand()%9+1;// заполнение элементов матрицы рандомными числами
+		StringGrid1->Cells[j][i]=mas[i][j];
+	   }
+
+	}
+ for(int l=0;l<n1;l++) mas2[l]= new int[k1];// выделение динамич памяти под mas2[n1][k1]
+ for (int i = 0; i <n1; i++) //Инициализация второй матрицы
+   {
+	   for (int j = 0; j < k1; j++)
+	   {
+		  mas2[i][j] = rand()%9+1; // заполнение элементов матрицы рандомными числами
+	   StringGrid2->Cells[j][i]=mas2[i][j];
+	   }
+
+   }
+}
+	catch(...){}
+	if (k!=n1) {
+	 Application->MessageBox(L"Число строк первой матрицы не равно числу столбцов второй!.",L"Внимание!",MB_OK);
+	}
+	  else {
+	 ansver = new int*[n];
+	 for (int i=0;i<n;i++) ansver[i] = new int[k1]; // выделение памяти под ответ
+
+	  }
+
+ //------------------------------//
+// Алгоритм умножения матриц //
+   for(int i=0; i < n; i++)
+   {
+ for(int j=0; j < k1; j++){
+ ansver[i][j]=0;
+ for(int k=0; k < n1; k++) {
+ ansver[i][j]+=mas[i][k]*mas2[k][j];  //Получение ответа
+  StringGrid3->Cells[j][i]=ansver[i][j]; //вывод ответа в таблицу
+ }
+	 }
+	 Current = 100;                // Заполнение
+ProgressBar1->Position = Current; // ProgressBar'a
+	  }
+
+// удаление из динамической памяти(кучи)
+for (int i=0;i<n;i++) {
+delete mas[i]; // удаление i-го элемента массива из mas
+delete ansver[i]; // удаление i-го элемента массива из ansver
+}
+delete []mas;
+delete []ansver;
+ for (int i=0;i<n1;i++) delete mas2[i]; //удаление i-го элемента массива из mas2
+delete []mas2;
+}
+//---------------------------------------------------------------------------
+
+
+
